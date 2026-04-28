@@ -1,0 +1,6 @@
+rootProject.name = 'restaurant-msa-project'
+include 'api-gateway'
+include 'auth-service'
+include 'menu-service'
+include 'order-service'
+include 'review-service'

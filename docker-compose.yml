@@ -1,0 +1,110 @@
+version: '3.9'
+
+networks:
+  msa-net:
+    driver: bridge
+
+volumes:
+  auth-data:
+  menu-data:
+  order-data:
+  review-data:
+  redis-data:
+
+services:
+  redis:
+    image: redis:7-alpine
+    networks: [msa-net]
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8088:8080"
+    environment:
+      - REDIS_HOST=redis
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on: [redis]
+    networks: [msa-net]
+    restart: unless-stopped
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+    container_name: auth-service
+    environment:
+      - REDIS_HOST=redis
+      - JWT_SECRET=${JWT_SECRET}
+    volumes:
+      - auth-data:/data
+    depends_on: [redis]
+    networks: [msa-net]
+    restart: unless-stopped
+
+  menu-service:
+    build:
+      context: .
+      dockerfile: menu-service/Dockerfile
+    container_name: menu-service
+    volumes:
+      - menu-data:/data
+    networks: [msa-net]
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+    container_name: order-service
+    volumes:
+      - order-data:/data
+    networks: [msa-net]
+    restart: unless-stopped
+
+  review-service:
+    build:
+      context: .
+      dockerfile: review-service/Dockerfile
+    container_name: review-service
+    volumes:
+      - review-data:/data
+    networks: [msa-net]
+    restart: unless-stopped
+
+  ai-service:
+    build:
+      context: ./ai-service
+    container_name: ai-service
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ORDER_SERVICE_URL=http://order-service:8083
+      - REVIEW_SERVICE_URL=http://review-service:8084
+    depends_on: [order-service, review-service]
+    networks: [msa-net]
+    restart: unless-stopped
+
+  frontend-customer:
+    build:
+      context: ./frontend-customer
+    container_name: frontend-customer
+    ports:
+      - "3000:80"
+    depends_on: [api-gateway]
+    networks: [msa-net]
+    restart: unless-stopped
+
+  frontend-admin:
+    build:
+      context: ./frontend-admin
+    container_name: frontend-admin
+    ports:
+      - "3001:80"
+    depends_on: [api-gateway]
+    networks: [msa-net]
+    restart: unless-stopped

@@ -1,0 +1,47 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+      routes:
+        - id: auth-service
+          uri: http://auth-service:8081
+          predicates:
+            - Path=/auth/**
+
+        - id: menu-service
+          uri: http://menu-service:8082
+          predicates:
+            - Path=/menus/**, /categories/**
+
+        - id: order-service
+          uri: http://order-service:8083
+          predicates:
+            - Path=/orders/**, /cart/**, /coupons/**
+
+        - id: review-service
+          uri: http://review-service:8084
+          predicates:
+            - Path=/reviews/**
+
+        - id: ai-service
+          uri: http://ai-service:8085
+          predicates:
+            - Path=/ai/**
+
+jwt:
+  secret: ${JWT_SECRET:supersecretkeymustbe32charslong!!}
