@@ -162,11 +162,9 @@ docker-compose exec auth-service /bin/sh
 
 ---
 
-## 📚상세 문서
+## 상세 문서
 
 더 자세한 요구사항은 아래 문서 참고:
-- [요구사항 명세서](docs/requirements-improved.md)
-- [서비스별 API 문서](docs/api-swagger.md)
 - Auth Service Swagger: http://localhost:8081/swagger-ui.html
 - Menu Service Swagger: http://localhost:8082/swagger-ui.html
 - Order Service Swagger: http://localhost:8083/swagger-ui.html
