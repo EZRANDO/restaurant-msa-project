@@ -1,6 +1,8 @@
 #  MSA 기반 식당 주문 서비스
 
+이 프로젝트는 오픈소스소프트웨어 개발 교과목의 일환으로, AI 코드 생성 모델을 활용한 MSA기반 서비스를 구성하였습니다.
 MSA 아키텍처 기반 온라인 주문 서비스. Docker + Spring Boot + Vue 3 + Python FastAPI + OpenAI
+
 
 ---
 
